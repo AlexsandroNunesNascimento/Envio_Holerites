@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal do Funcionário</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+         body { display: block; }
+        .page-container { max-width: 900px; margin: 2rem auto; }
+        .adm-header { display: flex; justify-content: space-between; align-items: center; background-color: #007bff; color: white; padding: 1rem 2rem; border-radius: 8px; }
+        .adm-header h1 { margin: 0; }
+        .logout-btn { background-color: #6c757d; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <header class="adm-header">
+            <h1>Portal do Funcionário</h1>
+            <button id="logout-btn-func" class="logout-btn">Sair</button>
+        </header>
+        <main style="background-color: #fff; padding: 2rem; margin-top: 1rem; border-radius: 8px;">
+            <h2>Bem-vindo!</h2>
+            <p>Este é o seu portal. Em breve, você poderá consultar seu holerite aqui.</p>
+        </main>
+    </div>
+    <script type="module" src="funcionario.js"></script>
+</body>
+</html>

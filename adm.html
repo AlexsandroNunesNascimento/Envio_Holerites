@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Administrador</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Estilos específicos para esta página -->
+    <style>
+        .page-container { max-width: 900px; margin: 2rem auto; }
+        .adm-header { display: flex; justify-content: space-between; align-items: center; background-color: #333; color: white; padding: 1rem 2rem; border-radius: 8px; }
+        .adm-header h1 { margin: 0; }
+        .logout-btn { background-color: #dc3545; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; }
+        .adm-content { display: flex; margin-top: 1rem; }
+        .side-menu { flex: 1; padding-right: 1rem; }
+        .side-menu button { display: block; width: 100%; padding: 1rem; margin-bottom: 0.5rem; background-color: #007bff; color: white; border: none; border-radius: 5px; text-align: left; cursor: pointer; }
+        .main-content { flex: 3; background-color: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+        #cadastro-section { display: none; /* Começa escondido */ }
+    </style>
+</head>
+<body>
+    <div class="page-container">
+        <header class="adm-header">
+            <h1>Painel do Administrador</h1>
+            <button id="logout-btn" class="logout-btn">Sair</button>
+        </header>
+
+        <div class="adm-content">
+            <nav class="side-menu">
+                <button id="show-cadastro-btn">Cadastro de Funcionário</button>
+                <!-- Outros botões podem ser adicionados aqui no futuro -->
+            </nav>
+            <main class="main-content">
+                <div id="welcome-section">
+                    <h2>Bem-vindo!</h2>
+                    <p>Selecione uma opção no menu à esquerda para começar.</p>
+                </div>
+                
+                <div id="cadastro-section">
+                    <h2>Cadastrar Novo Funcionário</h2>
+                    <form id="cadastro-form" class="login-form" style="box-shadow: none; padding: 0; border-radius: 0;">
+                        <div class="form-group">
+                            <label for="func-nome">Nome Completo</label>
+                            <input type="text" id="func-nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="func-cpf">CPF (ex: 123.456.789-00)</label>
+                            <input type="text" id="func-cpf" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="func-loja">Loja</label>
+                            <input type="text" id="func-loja" required>
+                        </div>
+                         <div class="form-group">
+                            <label for="func-senha">Senha Provisória</label>
+                            <input type="password" id="func-senha" required>
+                        </div>
+                        <button type="submit" class="submit-btn">Cadastrar</button>
+                    </form>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script type="module" src="adm.js"></script>
+</body>
+</html>
