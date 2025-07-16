@@ -144,3 +144,75 @@ body {
 .back-link a:hover {
     text-decoration: underline;
 }
+
+/* ======================================= */
+/* --- ESTILOS RESPONSIVOS PARA CELULAR --- */
+/* ======================================= */
+
+/* Aplica estas regras para telas com largura máxima de 768px */
+@media (max-width: 768px) {
+    body {
+        padding: 0;
+    }
+    .page-container {
+        margin: 0;
+        width: 100%;
+        padding: 0;
+    }
+
+    /* Ajusta o cabeçalho */
+    .portal-header {
+        flex-direction: column; /* Coloca o título acima dos botões */
+        gap: 1rem;
+        padding: 1.5rem 1rem;
+        border-radius: 0;
+        text-align: center;
+    }
+
+    /* Garante que os botões do cabeçalho fiquem lado a lado */
+    .header-actions {
+        display: flex;
+        justify-content: center;
+        width: 100%;
+        gap: 1rem;
+    }
+    .header-actions button {
+        flex: 1; /* Faz os botões dividirem o espaço igualmente */
+        padding: 0.8rem;
+    }
+
+    /* Ajusta o conteúdo principal */
+    .portal-content {
+        border-radius: 0;
+        padding: 1.5rem 1rem;
+        margin-top: 1rem;
+    }
+
+    .portal-content h2 {
+        font-size: 1.5em;
+    }
+
+    /* Ajusta a lista de holerites */
+    #holerites-list .func-item {
+        flex-direction: column; /* Coloca o texto e o botão em linhas separadas */
+        align-items: flex-start; /* Alinha tudo à esquerda */
+        gap: 1rem;
+    }
+
+    .func-info p {
+        font-size: 1em; /* Reduz um pouco a fonte */
+    }
+
+    .func-actions a {
+        width: 100%; /* Faz o botão de download ocupar a largura total */
+        text-align: center;
+        box-sizing: border-box; /* Garante que o padding não quebre o layout */
+    }
+
+    /* Ajusta o modal de senha */
+    .modal-content {
+        width: 90%;
+        margin: 10vh auto;
+        padding: 1.5rem;
+    }
+}

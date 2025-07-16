@@ -322,3 +322,89 @@ body {
     width: 100%;
     margin-top: 1rem;
 }
+
+/* ======================================= */
+/* --- ESTILOS RESPONSIVOS PARA CELULAR --- */
+/* ======================================= */
+
+/* Aplica estas regras para telas com largura máxima de 768px (tablets e celulares) */
+@media (max-width: 768px) {
+
+    /* Ajusta o layout principal da página */
+    .page-container {
+        margin: 1rem 0; /* Menos margem nas laterais */
+        padding: 0;
+        border-radius: 0;
+    }
+
+    /* O cabeçalho ocupa a largura total */
+    .adm-header {
+        border-radius: 0;
+        padding: 0.8rem 1rem;
+    }
+
+    .adm-header h1 {
+        font-size: 1.5em; /* Reduz um pouco o título */
+    }
+
+    /* Transforma o layout flexível em um layout de coluna (um item embaixo do outro) */
+    .adm-content {
+        flex-direction: column; /* Menu ficará acima do conteúdo */
+        gap: 1.5rem; /* Espaço entre menu e conteúdo */
+        padding: 0 1rem;
+    }
+
+    /* Ajusta o menu lateral */
+    .side-menu {
+        flex: 0 0 auto; /* Permite que a altura se ajuste ao conteúdo */
+        width: 100%; /* Ocupa a largura total */
+        box-sizing: border-box;
+    }
+
+    .side-menu button {
+        justify-content: center; /* Centraliza o ícone e texto */
+        padding: 0.8rem;
+    }
+
+    /* Esconde o texto dos botões no menu, deixando só o ícone visível para economizar espaço */
+    .side-menu button span {
+        display: none;
+    }
+    
+    /* Para isso funcionar, precisamos envolver o texto do botão em um span */
+
+
+    /* Ajusta o container do conteúdo principal */
+    .main-content {
+        padding: 1.5rem; /* Menos padding interno em telas menores */
+    }
+
+    .content-section h2 {
+        font-size: 1.5em;
+    }
+
+    /* Faz os filtros ocuparem a largura total e ficarem em coluna */
+    .filters-container {
+        flex-direction: column;
+        align-items: stretch; /* Estica os itens para preencher a largura */
+    }
+
+    /* Corrige o problema do botão no container de filtros */
+    .filters-container button {
+        width: 100%; /* Botão de filtro agora ocupa a largura total */
+    }
+
+    /* Melhora a apresentação da lista de funcionários em telas pequenas */
+    #result-list .func-item {
+        flex-direction: column; /* Coloca as informações e os botões um embaixo do outro */
+        align-items: flex-start; /* Alinha tudo à esquerda */
+        gap: 1rem;
+    }
+
+    /* Modal ocupa mais espaço na tela do celular */
+    .modal-content {
+        width: 95%;
+        margin: 5vh auto; /* Menos margem vertical */
+        padding: 1.5rem;
+    }
+}

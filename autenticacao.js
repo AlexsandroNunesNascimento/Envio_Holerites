@@ -12,7 +12,7 @@ const pageTitle = document.getElementById('page-title');
 const backToMainLoginLink = document.getElementById('back-to-main-login');
 
 gearButton.addEventListener('click', () => {
-    pageTitle.textContent = 'Login ADM';
+    pageTitle.textContent = 'Login Administração';
     mainLoginForm.style.display = 'none';
     adminLoginForm.style.display = 'block';
 });
