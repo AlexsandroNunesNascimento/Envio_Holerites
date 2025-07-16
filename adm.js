@@ -165,19 +165,38 @@ editForm.addEventListener('submit', async (event) => {
 holeriteUploadForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     const funcionarioId = holeriteFuncSelect.value;
-    const mesReferencia = reportMesSelect.value + '-01';
+    
+    // --- CORREÇÃO APLICADA AQUI ---
+    // A variável 'mesReferenciaInput' agora pega o elemento correto.
+    const mesReferenciaInput = document.getElementById('holerite-mes'); 
+    
     const pdfFile = document.getElementById('holerite-pdf-file').files[0];
     const submitButton = holeriteUploadForm.querySelector('button[type="submit"]');
 
-    if (!funcionarioId || !reportMesSelect.value || !pdfFile) { alert("Preencha todos os campos."); return; }
+    // --- E AQUI ---
+    // A verificação agora usa o 'mesReferenciaInput.value' para checar se a data foi preenchida.
+    if (!funcionarioId || !mesReferenciaInput.value || !pdfFile) {
+        alert("Preencha todos os campos.");
+        return;
+    }
+
+    const mesReferencia = mesReferenciaInput.value + '-01'; // Adiciona o dia para ser uma data válida
+
     submitButton.disabled = true;
     submitButton.textContent = 'Enviando...';
+
     try {
         const filePath = `${funcionarioId}/holerite_${mesReferencia.slice(0, 7)}_${Date.now()}.pdf`;
         const { error: uploadError } = await supabase.storage.from('holerites').upload(filePath, pdfFile);
         if (uploadError) throw uploadError;
-        const { error: insertError } = await supabase.from('holerites').insert({ funcionario_id: funcionarioId, mes_referencia: mesReferencia, pdf_path: filePath });
+        
+        const { error: insertError } = await supabase.from('holerites').insert({
+            funcionario_id: funcionarioId,
+            mes_referencia: mesReferencia,
+            pdf_path: filePath
+        });
         if (insertError) throw insertError;
+
         alert('Holerite enviado com sucesso!');
         holeriteUploadForm.reset();
         holeriteLojaSelect.value = "";
