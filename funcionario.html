@@ -11,6 +11,12 @@
         .adm-header { display: flex; justify-content: space-between; align-items: center; background-color: #007bff; color: white; padding: 1rem 2rem; border-radius: 8px; }
         .adm-header h1 { margin: 0; }
         .logout-btn { background-color: #6c757d; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; }
+        
+        /* Reutilizando estilos da página de adm para a lista */
+        .func-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border: 1px solid #eee; border-radius: 5px; margin-bottom: 1rem; }
+        .func-info p { margin: 0; font-size: 1.1em;}
+        .func-info p span { font-weight: bold; }
+        .func-actions a { text-decoration: none; padding: 0.5rem 1rem; }
     </style>
 </head>
 <body>
@@ -20,8 +26,13 @@
             <button id="logout-btn-func" class="logout-btn">Sair</button>
         </header>
         <main style="background-color: #fff; padding: 2rem; margin-top: 1rem; border-radius: 8px;">
-            <h2>Bem-vindo!</h2>
-            <p>Este é o seu portal. Em breve, você poderá consultar seu holerite aqui.</p>
+            <h2 id="welcome-message">Bem-vindo!</h2>
+            <div id="holerite-section" style="margin-top: 2rem; border-top: 1px solid #eee; padding-top: 1.5rem;">
+                <h3>Seu Histórico de Holerites</h3>
+                <div id="holerites-list">
+                    <p>Buscando seus arquivos...</p>
+                </div>
+            </div>
         </main>
     </div>
     <script type="module" src="funcionario.js"></script>
