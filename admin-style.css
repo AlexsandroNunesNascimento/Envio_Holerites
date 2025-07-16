@@ -1,0 +1,324 @@
+/* admin-style.css */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap');
+
+:root {
+    --primary-color: #007bff;
+    --primary-hover: #0056b3;
+    --success-color: #28a745;
+    --dark-sidebar: #2c3e50;
+    --dark-sidebar-hover: #34495e;
+    --light-bg: #f4f6f9;
+    --content-bg: #ffffff;
+    --text-color: #333;
+    --border-color: #e0e0e0;
+    --shadow-color: rgba(0, 0, 0, 0.08);
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    background-color: var(--light-bg);
+    color: var(--text-color);
+}
+
+.page-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+.adm-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--content-bg);
+    padding: 1rem 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px var(--shadow-color);
+    margin-bottom: 2rem;
+}
+
+.adm-header h1 {
+    margin: 0;
+    font-size: 1.8em;
+    font-weight: 600;
+    color: var(--dark-sidebar);
+}
+
+.logout-btn {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+    transition: background-color 0.3s ease;
+}
+
+.logout-btn:hover {
+    background-color: #c82333;
+}
+
+.adm-content {
+    display: flex;
+    gap: 2rem;
+}
+
+.side-menu {
+    flex: 0 0 240px;
+    background-color: var(--dark-sidebar);
+    border-radius: 10px;
+    padding: 1rem;
+    color: white;
+}
+
+.side-menu button {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 0.5rem;
+    background-color: transparent;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    text-align: left;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-size: 1em;
+    transition: background-color 0.2s ease;
+}
+
+.side-menu button:hover {
+    background-color: var(--dark-sidebar-hover);
+}
+
+.side-menu button i {
+    width: 20px;
+}
+
+.main-content {
+    flex: 1;
+    background-color: var(--content-bg);
+    padding: 2.5rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px var(--shadow-color);
+}
+
+.content-section {
+    display: none;
+}
+
+.content-section.active {
+    display: block;
+}
+
+.content-section h2 {
+    margin-top: 0;
+    font-size: 1.8em;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+}
+
+.content-section p {
+    font-size: 1.1em;
+    color: #666;
+}
+
+/* NOVO CONTAINER GERAL PARA FILTROS */
+.filters-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    align-items: flex-end; /* Alinha o botão com a base dos inputs */
+    background-color: #f8f9fa;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 2rem;
+}
+
+.filters-container .filter-group {
+    flex: 1 1 220px; /* Permite que os campos cresçam e se ajustem */
+    display: flex;
+    flex-direction: column;
+}
+
+.filters-container label {
+    font-size: 0.9em;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #555;
+}
+
+.filters-container input,
+.filters-container select {
+    width: 100%;
+    box-sizing: border-box; /* Garante que padding não afete a largura */
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border-color);
+    font-size: 1em;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.2s ease-in-out;
+}
+
+.filters-container input:focus,
+.filters-container select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.15);
+}
+
+.filters-container button {
+    height: 42.5px; /* Alinha a altura com os campos */
+    flex-shrink: 0; /* Impede que o botão encolha em telas menores */
+}
+
+.submit-btn {
+    padding: 12px;
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 500;
+    font-family: 'Poppins', sans-serif;
+    transition: all 0.2s ease-in-out;
+}
+
+.submit-btn:hover {
+    background-color: var(--primary-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.3);
+}
+
+#result-list .func-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background-color: #fcfcfc;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: 1rem;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#result-list .func-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px var(--shadow-color);
+}
+
+#result-list .func-actions button {
+    padding: 0.5rem 1rem;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 500;
+    transition: opacity 0.2s;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: white;
+}
+
+.edit-btn { background-color: #ffc107; color: #333;}
+.delete-btn { background-color: #dc3545; }
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+    animation: fadeIn 0.3s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    background-color: var(--content-bg);
+    margin: 10vh auto;
+    padding: 2.5rem;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 550px;
+    box-shadow: 0 5px 25px rgba(0, 0, 0, 0.2);
+    position: relative;
+    animation: slideDown 0.4s ease-out;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.close-btn {
+    color: #aaa;
+    position: absolute;
+    top: 15px;
+    right: 25px;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn:hover {
+    color: #333;
+}
+
+/* ======================================= */
+/* --- ESTILOS CORRETIVOS PARA FORMULÁRIOS --- */
+/* ======================================= */
+
+/* Define um layout base para todos os formulários dentro do painel */
+.main-content .login-form,
+.modal-content form {
+    padding: 1rem;
+    background-color: #fdfdfd;
+    border-radius: 8px;
+    border: 1px solid #f0f0f0;
+}
+
+/* Grupo de formulário (label + input) */
+.form-group {
+    margin-bottom: 1.5rem; /* Aumenta o espaçamento vertical entre os campos */
+}
+
+/* Rótulos (Labels) */
+.form-group label {
+    display: block; /* Força o label a ficar em uma linha própria, acima do input */
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 0.5rem; /* Espaço entre o label e o campo */
+}
+
+/* Campos de entrada e seleção */
+.form-group input,
+.form-group select {
+    width: 100%; /* FAZ O CAMPO OCUPAR 100% DA LARGURA DISPONÍVEL */
+    box-sizing: border-box; /* Garante que padding e border não alterem a largura final */
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 1em;
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Botão de envio dentro de um formulário */
+.login-form .submit-btn,
+.modal-content .submit-btn {
+    width: 100%;
+    margin-top: 1rem;
+}

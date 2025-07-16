@@ -4,50 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Painel do Administrador</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Estilos específicos e novos para esta página -->
-    <style>
-        .page-container { max-width: 900px; margin: 2rem auto; }
-        .adm-header { display: flex; justify-content: space-between; align-items: center; background-color: #333; color: white; padding: 1rem 2rem; border-radius: 8px; }
-        .adm-header h1 { margin: 0; }
-        .logout-btn { background-color: #dc3545; color: white; border: none; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer; }
-        .adm-content { display: flex; margin-top: 1rem; gap: 1rem; }
-        .side-menu { flex: 0 0 200px; }
-        .side-menu button { display: block; width: 100%; padding: 1rem; margin-bottom: 0.5rem; background-color: #007bff; color: white; border: none; border-radius: 5px; text-align: left; cursor: pointer; transition: background-color 0.2s; }
-        .side-menu button:hover { background-color: #0056b3; }
-        .main-content { flex: 1; background-color: #fff; padding: 2rem; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
-        .content-section { display: none; /* Todas as seções começam escondidas */ }
-        .content-section.active { display: block; /* Apenas a ativa é mostrada */ }
-        
-        /* Estilos para a área de consulta */
-        .search-filters { display: flex; gap: 1rem; margin-bottom: 1.5rem; }
-        .search-filters input { flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: 4px; }
-        #result-list .func-item { display: flex; justify-content: space-between; align-items: center; padding: 1rem; border: 1px solid #eee; border-radius: 5px; margin-bottom: 0.5rem; }
-        #result-list .func-info p { margin: 0; }
-        #result-list .func-info p span { font-weight: bold; }
-        #result-list .func-actions button { margin-left: 0.5rem; padding: 0.3rem 0.8rem; border: none; border-radius: 4px; cursor: pointer; color: white; }
-        .edit-btn { background-color: #ffc107; }
-        .delete-btn { background-color: #dc3545; }
-        #no-results { color: #888; }
-        
-        /* Estilos para o Modal de Edição */
-        .modal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5); }
-        .modal-content { background-color: #fefefe; margin: 10% auto; padding: 20px; border: 1px solid #888; width: 80%; max-width: 500px; border-radius: 8px; }
-        .close-btn { color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; }
-    </style>
+    <link rel="stylesheet" href="admin-style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
 </head>
 <body>
     <div class="page-container">
         <header class="adm-header">
-            <h1>Painel do Administrador</h1>
+            <h1>Painel ADM</h1>
             <button id="logout-btn" class="logout-btn">Sair</button>
         </header>
 
         <div class="adm-content">
             <nav class="side-menu">
-                <button data-target="cadastro-section">Cadastro de Funcionário</button>
-                <button data-target="consulta-section">Consultar Funcionário</button>
-                <button data-target="holerite-section">Enviar Holerites</button>
+                <button data-target="cadastro-section"><i class="fa-solid fa-user-plus"></i> Cadastro</button>
+                <button data-target="consulta-section"><i class="fa-solid fa-search"></i> Consultar</button>
+                <button data-target="holerite-section"><i class="fa-solid fa-file-invoice-dollar"></i> Enviar Holerite</button>
+                <button data-target="report-section"><i class="fa-solid fa-chart-line"></i> Relatórios</button>
             </nav>
             <main class="main-content">
                 <div id="welcome-section" class="content-section active">
@@ -57,42 +29,41 @@
                 
                 <div id="cadastro-section" class="content-section">
                     <h2>Cadastrar Novo Funcionário</h2>
-                    <form id="cadastro-form" class="login-form" style="box-shadow: none; padding: 0; border-radius: 0;">
+                    <form id="cadastro-form" class="login-form" style="box-shadow: none; padding: 0;">
                         <div class="form-group"><label for="func-nome">Nome Completo</label><input type="text" id="func-nome" required></div>
                         <div class="form-group"><label for="func-cpf">CPF</label><input type="text" id="func-cpf" required></div>
                         <div class="form-group"><label for="func-loja">Loja</label><input type="text" id="func-loja" required></div>
                         <div class="form-group"><label for="func-senha">Senha Provisória</label><input type="password" id="func-senha" required></div>
-                        <button type="submit" class="submit-btn">Cadastrar</button>
+                        <button type="submit" class="submit-btn" style="width: 100%;">Cadastrar</button>
                     </form>
                 </div>
 
                 <div id="consulta-section" class="content-section">
                     <h2>Consultar Funcionários</h2>
-                    <div class="search-filters">
-                        <input type="text" id="search-nome" placeholder="Buscar por nome...">
-                        <input type="text" id="search-loja" placeholder="Buscar por loja...">
+                    <div class="filters-container">
+                        <div class="filter-group">
+                             <label for="search-nome">Buscar por nome</label>
+                            <input type="text" id="search-nome" placeholder="Digite o nome do funcionário...">
+                        </div>
+                       <div class="filter-group">
+                            <label for="search-loja">Buscar por loja</label>
+                            <input type="text" id="search-loja" placeholder="Digite o nome da loja...">
+                       </div>
                     </div>
-                    <div id="result-list">
-                        <!-- Os resultados da busca serão inseridos aqui pelo JS -->
-                    </div>
+                    <div id="result-list"></div>
                     <p id="no-results" style="display: none;">Nenhum funcionário encontrado.</p>
                 </div>
 
                 <div id="holerite-section" class="content-section">
                     <h2>Enviar Holerite</h2>
-                    <p>Selecione o funcionário, o mês de referência e o arquivo PDF para enviar.</p>
                     <form id="holerite-upload-form" class="login-form" style="box-shadow: none; padding: 0;">
                         <div class="form-group">
                             <label for="holerite-loja-select">Filtrar por Loja</label>
-                            <select id="holerite-loja-select">
-                                <option value="">Todas as Lojas</option>
-                            </select>
+                            <select id="holerite-loja-select"><option value="">Todas as Lojas</option></select>
                         </div>
                         <div class="form-group">
                             <label for="holerite-func-select">Selecione o Funcionário</label>
-                            <select id="holerite-func-select" required>
-                                <option value="" disabled selected>-- Escolha um funcionário --</option>
-                            </select>
+                            <select id="holerite-func-select" required><option value="" disabled selected>-- Escolha um funcionário --</option></select>
                         </div>
                          <div class="form-group">
                             <label for="holerite-mes">Mês de Referência</label>
@@ -102,16 +73,40 @@
                             <label for="holerite-pdf-file">Arquivo (PDF)</label>
                             <input type="file" id="holerite-pdf-file" accept=".pdf" required>
                         </div>
-
-                        <button type="submit" class="submit-btn">Enviar Holerite</button>
+                        <button type="submit" class="submit-btn" style="width: 100%;">Enviar Holerite</button>
                     </form>
                 </div>
 
+                <div id="report-section" class="content-section">
+                    <h2>Relatório de Downloads</h2>
+                    <div class="filters-container">
+                        <div class="filter-group">
+                            <label for="report-loja-select">Loja</label>
+                            <select id="report-loja-select">
+                                <option value="">Selecione a loja</option>
+                            </select>
+                        </div>
+                        <div class="filter-group">
+                            <label for="report-mes-select">Mês de Referência (Opcional)</label>
+                            <input type="month" id="report-mes-select">
+                        </div>
+                        <button id="generate-report-btn" class="submit-btn">Gerar Relatório</button>
+                    </div>
+                    
+                    <div id="report-actions" style="display:none; text-align: right; margin-top: 1.5rem; margin-bottom: 1rem;">
+                        <button id="print-report-btn" class="submit-btn" style="background-color: var(--success-color);">
+                            <i class="fa-solid fa-print"></i> Imprimir em PDF
+                        </button>
+                    </div>
+                    
+                    <div id="report-output">
+                        <p style="color: #888; text-align: center; margin-top: 2rem;">Selecione os filtros e gere um relatório.</p>
+                    </div>
+                </div>
             </main>
         </div>
     </div>
-
-    <!-- Modal para Edição de Funcionário -->
+    
     <div id="edit-modal" class="modal">
         <div class="modal-content">
             <span id="close-modal-btn" class="close-btn">×</span>
@@ -123,7 +118,7 @@
                     <input type="text" id="edit-nome" required>
                 </div>
                 <div class="form-group">
-                    <label for="edit-cpf">CPF</label>
+                    <label for="edit-cpf">CPF (não pode ser alterado)</label>
                     <input type="text" id="edit-cpf" readonly disabled>
                 </div>
                 <div class="form-group">
@@ -134,11 +129,13 @@
                     <label for="edit-senha">Nova Senha (deixe em branco para não alterar)</label>
                     <input type="password" id="edit-senha">
                 </div>
-                <button type="submit" class="submit-btn">Salvar Alterações</button>
+                <button type="submit" class="submit-btn" style="width: 100%;">Salvar Alterações</button>
             </form>
         </div>
     </div>
-
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script type="module" src="adm.js"></script>
 </body>
 </html>

@@ -1,156 +1,123 @@
 // adm.js
 import { supabase } from './supabase.js';
 
-// --- SELEÇÃO DOS ELEMENTOS DO DOM ---
+// --- SELETORES GERAIS DO DOM ---
 const logoutBtn = document.getElementById('logout-btn');
 const sideMenuButtons = document.querySelectorAll('.side-menu button');
 const contentSections = document.querySelectorAll('.content-section');
+
+// --- Seletores da Seção CADASTRO ---
 const cadastroForm = document.getElementById('cadastro-form');
 
-// Elementos da área de consulta
+// --- Seletores da Seção CONSULTA e EDIÇÃO ---
 const searchNomeInput = document.getElementById('search-nome');
 const searchLojaInput = document.getElementById('search-loja');
 const resultList = document.getElementById('result-list');
 const noResultsMessage = document.getElementById('no-results');
-
-// Elementos do Modal de Edição
 const editModal = document.getElementById('edit-modal');
 const closeModalBtn = document.getElementById('close-modal-btn');
 const editForm = document.getElementById('edit-form');
 
-// Elementos da área de Envio de Holerite
+// --- Seletores da Seção ENVIAR HOLERITE ---
 const holeriteUploadForm = document.getElementById('holerite-upload-form');
-const lojaSelect = document.getElementById('holerite-loja-select');
-const funcSelect = document.getElementById('holerite-func-select');
+const holeriteLojaSelect = document.getElementById('holerite-loja-select');
+const holeriteFuncSelect = document.getElementById('holerite-func-select');
 
-let allFuncionarios = []; // Guarda a lista completa de funcionários para otimização
+// --- Seletores da Seção RELATÓRIOS ---
+const reportLojaSelect = document.getElementById('report-loja-select');
+const reportMesSelect = document.getElementById('report-mes-select');
+const generateReportBtn = document.getElementById('generate-report-btn');
+const reportActionsDiv = document.getElementById('report-actions');
+const printReportBtn = document.getElementById('print-report-btn');
+const reportOutput = document.getElementById('report-output');
 
-// --- FUNÇÃO PARA TROCAR AS TELAS (SEÇÕES) ---
+// --- VARIÁVEL GLOBAL PARA CACHE ---
+let allFuncionarios = [];
+
+// --- FUNÇÕES DE NAVEGAÇÃO E PREENCHIMENTO ---
 const showSection = (targetId) => {
     contentSections.forEach(section => {
-        section.classList.remove('active');
-        if (section.id === targetId) {
-            section.classList.add('active');
-        }
+        section.classList.toggle('active', section.id === targetId);
     });
 };
 
-// --- FUNÇÃO PARA POPULAR OS FILTROS DE ENVIO DE HOLERITE ---
-const populateHoleriteFilters = async () => {
+const populateLojaFilters = async () => {
+    // Busca os funcionários apenas uma vez para otimizar
+    if (allFuncionarios.length > 0) return;
+
     const { data, error } = await supabase.from('funcionario').select('id, nome, loja').order('nome');
     if (error) {
-        console.error("Erro ao buscar funcionários:", error);
+        console.error("Erro ao buscar funcionários para os filtros:", error);
         return;
     }
+
     allFuncionarios = data;
+    const lojas = [...new Set(allFuncionarios.map(f => f.loja))].sort();
 
-    const lojas = [...new Set(allFuncionarios.map(f => f.loja))];
-    lojaSelect.innerHTML = '<option value="">Todas as Lojas</option>';
-    lojas.sort().forEach(loja => {
-        lojaSelect.innerHTML += `<option value="${loja}">${loja}</option>`;
-    });
+    // Limpa os seletores antes de popular
+    holeriteLojaSelect.innerHTML = '<option value="">Todas as Lojas</option>';
+    reportLojaSelect.innerHTML = '<option value="" disabled selected>Selecione uma loja...</option>';
 
-    updateFuncionarioSelect();
-};
-
-const updateFuncionarioSelect = () => {
-    const selectedLoja = lojaSelect.value;
-    const filteredFuncionarios = selectedLoja ? allFuncionarios.filter(f => f.loja === selectedLoja) : allFuncionarios;
-
-    funcSelect.innerHTML = '<option value="" disabled selected>-- Escolha um funcionário --</option>';
-    filteredFuncionarios.forEach(func => {
-        funcSelect.innerHTML += `<option value="${func.id}">${func.nome}</option>`;
+    lojas.forEach(loja => {
+        holeriteLojaSelect.innerHTML += `<option value="${loja}">${loja}</option>`;
+        reportLojaSelect.innerHTML += `<option value="${loja}">${loja}</option>`;
     });
 };
 
-// --- LÓGICA DE NAVEGAÇÃO DO MENU LATERAL ---
+// --- EVENT LISTENERS GERAIS ---
 sideMenuButtons.forEach(button => {
     button.addEventListener('click', () => {
         const targetSectionId = button.getAttribute('data-target');
         showSection(targetSectionId);
-        
         if (targetSectionId === 'consulta-section') fetchAndDisplayFuncionarios();
-        if (targetSectionId === 'holerite-section') populateHoleriteFilters();
+        if (targetSectionId === 'holerite-section' || targetSectionId === 'report-section') populateLojaFilters();
     });
 });
 
-lojaSelect.addEventListener('change', updateFuncionarioSelect);
+holeriteLojaSelect.addEventListener('change', () => {
+    const selectedLoja = holeriteLojaSelect.value;
+    const filteredFuncionarios = selectedLoja ? allFuncionarios.filter(f => f.loja === selectedLoja) : allFuncionarios;
+    holeriteFuncSelect.innerHTML = '<option value="" disabled selected>-- Escolha um funcionário --</option>';
+    filteredFuncionarios.forEach(func => {
+        holeriteFuncSelect.innerHTML += `<option value="${func.id}">${func.nome}</option>`;
+    });
+});
 
-// --- LÓGICA PARA FORMULÁRIO DE UPLOAD DE HOLERITE ---
-holeriteUploadForm.addEventListener('submit', async (event) => {
+// --- LÓGICA DE CADASTRO ---
+cadastroForm.addEventListener('submit', async (event) => {
     event.preventDefault();
-    
-    const funcionarioId = funcSelect.value;
-    const mesReferencia = document.getElementById('holerite-mes').value + '-01';
-    const pdfFile = document.getElementById('holerite-pdf-file').files[0];
-    const submitButton = holeriteUploadForm.querySelector('button[type="submit"]');
+    const { error } = await supabase.from('funcionario').insert([{
+        nome: document.getElementById('func-nome').value,
+        cpf: document.getElementById('func-cpf').value,
+        loja: document.getElementById('func-loja').value,
+        senha: document.getElementById('func-senha').value
+    }]);
 
-    if (!funcionarioId || !document.getElementById('holerite-mes').value || !pdfFile) {
-        alert("Por favor, preencha todos os campos.");
-        return;
-    }
-
-    submitButton.disabled = true;
-    submitButton.textContent = 'Enviando...';
-
-    try {
-        const fileName = `holerite_${mesReferencia.slice(0, 7)}_${Date.now()}.pdf`;
-        const filePath = `${funcionarioId}/${fileName}`;
-
-        const { error: uploadError } = await supabase.storage.from('holerites').upload(filePath, pdfFile);
-        if (uploadError) throw uploadError;
-
-        const { error: insertError } = await supabase.from('holerites').insert({
-            funcionario_id: funcionarioId,
-            mes_referencia: mesReferencia,
-            pdf_path: filePath
-        });
-        if (insertError) throw insertError;
-
-        alert('Holerite enviado com sucesso!');
-        holeriteUploadForm.reset();
-        lojaSelect.value = "";
-        updateFuncionarioSelect();
-        
-    } catch (error) {
-        console.error("Erro no envio do holerite:", error);
-        alert(`Ocorreu um erro: ${error.message}`);
-    } finally {
-        submitButton.disabled = false;
-        submitButton.textContent = 'Enviar Holerite';
+    if (error) {
+        alert(error.code === '23505' ? 'Erro: O CPF informado já está cadastrado.' : `Erro: ${error.message}`);
+    } else {
+        alert('Funcionário cadastrado com sucesso!');
+        cadastroForm.reset();
+        allFuncionarios = []; // Limpa o cache para forçar a atualização
     }
 });
 
-// --- LÓGICA DE CADASTRO, CONSULTA, EDIÇÃO E EXCLUSÃO (EXISTENTE) ---
-// Todo o código anterior de consulta, edição, exclusão, etc., permanece aqui.
-// (Omitido por brevidade, mas deve estar presente no seu arquivo final).
-// Função fetchAndDisplayFuncionarios
-// Função do cadastroForm
-// Funções do Modal e Formulário de Edição
-// Funções dos botões de editar e deletar
-//...
-
-// (Incluindo as funções para que o arquivo fique completo)
+// --- LÓGICA DE CONSULTA E EDIÇÃO ---
 const fetchAndDisplayFuncionarios = async () => {
-    const nomeFilter = searchNomeInput.value;
-    const lojaFilter = searchLojaInput.value;
     let query = supabase.from('funcionario').select('*').order('nome', { ascending: true });
-    if (nomeFilter) query = query.ilike('nome', `%${nomeFilter}%`);
-    if (lojaFilter) query = query.ilike('loja', `%${lojaFilter}%`);
+    if (searchNomeInput.value) query = query.ilike('nome', `%${searchNomeInput.value}%`);
+    if (searchLojaInput.value) query = query.ilike('loja', `%${searchLojaInput.value}%`);
+
     const { data, error } = await query;
-    if (error) {
-        console.error('Erro ao buscar funcionários:', error);
-        return;
-    }
+    if (error) { console.error('Erro ao buscar funcionários:', error); return; }
+
     resultList.innerHTML = '';
     noResultsMessage.style.display = data.length === 0 ? 'block' : 'none';
+
     data.forEach(func => {
         const item = document.createElement('div');
         item.className = 'func-item';
-        item.innerHTML = `
-            <div class="func-info"><p><span>Nome:</span> ${func.nome}</p><p><span>CPF:</span> ${func.cpf}</p><p><span>Loja:</span> ${func.loja}</p></div>
-            <div class="func-actions"><button class="edit-btn" data-id="${func.id}">Editar</button><button class="delete-btn" data-id="${func.id}">Excluir</button></div>
-        `;
+        item.innerHTML = `<div class="func-info"><p><span>Nome:</span> ${func.nome}</p><p><span>CPF:</span> ${func.cpf}</p><p><span>Loja:</span> ${func.loja}</p></div><div class="func-actions"><button class="edit-btn" data-id="${func.id}">Editar</button><button class="delete-btn" data-id="${func.id}">Excluir</button></div>`;
         resultList.appendChild(item);
     });
 };
@@ -158,55 +125,161 @@ const fetchAndDisplayFuncionarios = async () => {
 searchNomeInput.addEventListener('keyup', fetchAndDisplayFuncionarios);
 searchLojaInput.addEventListener('keyup', fetchAndDisplayFuncionarios);
 
-cadastroForm.addEventListener('submit', async (event) => {
-    event.preventDefault();
-    const { error } = await supabase.from('funcionario').insert([
-        { nome: document.getElementById('func-nome').value, cpf: document.getElementById('func-cpf').value, loja: document.getElementById('func-loja').value, senha: document.getElementById('func-senha').value }
-    ]);
-    if (error) {
-        alert(error.code === '23505' ? 'Erro: O CPF informado já está cadastrado.' : `Erro: ${error.message}`);
-    } else {
-        alert('Funcionário cadastrado com sucesso!');
-        cadastroForm.reset();
-    }
-});
-
 resultList.addEventListener('click', async (event) => {
     const target = event.target;
     const id = target.getAttribute('data-id');
+    if (!id) return;
 
     if (target.classList.contains('delete-btn')) {
         if (confirm('Tem certeza que deseja excluir este funcionário?')) {
             const { error } = await supabase.from('funcionario').delete().eq('id', id);
-            if (error) alert(`Erro ao excluir: ${error.message}`);
-            else { alert('Funcionário excluído.'); fetchAndDisplayFuncionarios(); }
+            if (error) { alert(`Erro ao excluir: ${error.message}`); } else { alert('Funcionário excluído.'); fetchAndDisplayFuncionarios(); allFuncionarios = []; }
         }
-    }
-    
-    if (target.classList.contains('edit-btn')) {
+    } else if (target.classList.contains('edit-btn')) {
         const { data, error } = await supabase.from('funcionario').select('*').eq('id', id).single();
-        if(error) { alert(`Erro ao carregar dados: ${error.message}`); return; }
+        if (error) { alert(`Erro ao carregar dados: ${error.message}`); return; }
         document.getElementById('edit-id').value = data.id;
         document.getElementById('edit-nome').value = data.nome;
         document.getElementById('edit-cpf').value = data.cpf;
         document.getElementById('edit-loja').value = data.loja;
+        document.getElementById('edit-senha').value = '';
         editModal.style.display = 'block';
     }
 });
 
-closeModalBtn.addEventListener('click', () => { editModal.style.display = 'none'; });
+closeModalBtn.addEventListener('click', () => editModal.style.display = 'none');
 window.addEventListener('click', (event) => { if (event.target == editModal) editModal.style.display = 'none'; });
 
 editForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     const id = document.getElementById('edit-id').value;
-    const senha = document.getElementById('edit-senha').value;
     let dadosParaAtualizar = { nome: document.getElementById('edit-nome').value, loja: document.getElementById('edit-loja').value };
-    if (senha) dadosParaAtualizar.senha = senha;
-    
+    if (document.getElementById('edit-senha').value) {
+        dadosParaAtualizar.senha = document.getElementById('edit-senha').value;
+    }
     const { error } = await supabase.from('funcionario').update(dadosParaAtualizar).eq('id', id);
-    if (error) alert(`Erro ao atualizar: ${error.message}`);
-    else { alert('Funcionário atualizado!'); editModal.style.display = 'none'; fetchAndDisplayFuncionarios(); }
+    if (error) { alert(`Erro ao atualizar: ${error.message}`); } else { alert('Funcionário atualizado!'); editModal.style.display = 'none'; fetchAndDisplayFuncionarios(); allFuncionarios = []; }
 });
 
-logoutBtn.addEventListener('click', () => { window.location.href = 'index.html'; });
+// --- LÓGICA DE ENVIO DE HOLERITE ---
+holeriteUploadForm.addEventListener('submit', async (event) => {
+    event.preventDefault();
+    const funcionarioId = holeriteFuncSelect.value;
+    const mesReferencia = reportMesSelect.value + '-01';
+    const pdfFile = document.getElementById('holerite-pdf-file').files[0];
+    const submitButton = holeriteUploadForm.querySelector('button[type="submit"]');
+
+    if (!funcionarioId || !reportMesSelect.value || !pdfFile) { alert("Preencha todos os campos."); return; }
+    submitButton.disabled = true;
+    submitButton.textContent = 'Enviando...';
+    try {
+        const filePath = `${funcionarioId}/holerite_${mesReferencia.slice(0, 7)}_${Date.now()}.pdf`;
+        const { error: uploadError } = await supabase.storage.from('holerites').upload(filePath, pdfFile);
+        if (uploadError) throw uploadError;
+        const { error: insertError } = await supabase.from('holerites').insert({ funcionario_id: funcionarioId, mes_referencia: mesReferencia, pdf_path: filePath });
+        if (insertError) throw insertError;
+        alert('Holerite enviado com sucesso!');
+        holeriteUploadForm.reset();
+        holeriteLojaSelect.value = "";
+    } catch (error) {
+        alert(`Erro: ${error.message}`);
+    } finally {
+        submitButton.disabled = false;
+        submitButton.textContent = 'Enviar Holerite';
+    }
+});
+
+// --- LÓGICA DO RELATÓRIO ---
+const formatarMesReferencia = (dataISO) => {
+    const data = new Date(dataISO);
+    return `${data.toLocaleString('pt-BR', { month: 'long', timeZone: 'UTC' })} de ${data.getUTCFullYear()}`;
+};
+
+const formatarStatusDownload = (dataISO) => {
+    return dataISO ? `<span style="color: var(--success-color, #28a745); font-weight: bold;">Baixado</span> (${new Date(dataISO).toLocaleDateString('pt-BR')})` : '<span style="color: #f39c12; font-weight: bold;">Pendente</span>';
+};
+
+generateReportBtn.addEventListener('click', async () => {
+    const loja = reportLojaSelect.value;
+    if (!loja) { alert("Selecione uma loja para o relatório."); return; }
+    
+    generateReportBtn.disabled = true;
+    generateReportBtn.textContent = 'Gerando...';
+    reportOutput.innerHTML = '<p>Buscando dados, por favor, aguarde...</p>';
+
+    let query = supabase.from('funcionario').select('nome, holerites(mes_referencia, data_download)').eq('loja', loja);
+
+    if (reportMesSelect.value) {
+        const inicioMes = `${reportMesSelect.value}-01`;
+        const proximoMes = new Date(inicioMes);
+        proximoMes.setUTCMonth(proximoMes.getUTCMonth() + 1);
+        const fimMes = proximoMes.toISOString().split('T')[0];
+        query = query.filter('holerites.mes_referencia', 'gte', inicioMes).filter('holerites.mes_referencia', 'lt', fimMes);
+    }
+    
+    query = query.order('nome').order('mes_referencia', { foreignTable: 'holerites', ascending: false });
+    const { data: funcionarios, error } = await query;
+
+    generateReportBtn.disabled = false;
+    generateReportBtn.textContent = 'Gerar Relatório';
+    
+    if (error) { reportOutput.innerHTML = `<p style="color:red;">Erro: ${error.message}</p>`; return; }
+    if (funcionarios.length === 0) { reportOutput.innerHTML = '<p>Nenhum funcionário encontrado para esta loja.</p>'; reportActionsDiv.style.display = 'none'; return; }
+
+    let tableHTML = `<div id="printable-report"><h3 style="text-align:center; font-weight: 600;">Relatório de Downloads - Loja: ${loja}</h3><table style="width:100%; border-collapse: collapse; font-size: 0.9em;"><thead style="background-color: #34495e; color: white;"><tr><th style="padding: 10px; text-align: left;">Funcionário</th><th style="padding: 10px; text-align: left;">Mês Referência</th><th style="padding: 10px; text-align: left;">Status</th></tr></thead><tbody>`;
+
+    funcionarios.forEach(func => {
+        if (func.holerites.length === 0) {
+            tableHTML += `<tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px; font-weight: 600;">${func.nome}</td><td colspan="2" style="padding: 10px; color: #888;">Nenhum holerite no período selecionado</td></tr>`;
+        } else {
+            func.holerites.forEach((holerite, index) => {
+                tableHTML += `<tr style="border-bottom: 1px solid #eee;"><td style="padding: 10px; font-weight: ${index === 0 ? '600' : 'normal'}">${index === 0 ? func.nome : ''}</td><td style="padding: 10px;">${formatarMesReferencia(holerite.mes_referencia)}</td><td style="padding: 10px;">${formatarStatusDownload(holerite.data_download)}</td></tr>`;
+            });
+        }
+    });
+    tableHTML += `</tbody></table></div>`;
+    reportOutput.innerHTML = tableHTML;
+    reportActionsDiv.style.display = 'block';
+});
+
+printReportBtn.addEventListener('click', () => {
+    const { jsPDF } = window.jspdf;
+    const reportContent = document.getElementById('printable-report');
+    if (!reportContent) return;
+
+    printReportBtn.textContent = 'Preparando PDF...';
+    printReportBtn.disabled = true;
+
+    html2canvas(reportContent, { scale: 2, useCORS: true }).then(canvas => {
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+        const pdfWidth = pdf.internal.pageSize.getWidth();
+        const pdfHeight = pdf.internal.pageSize.getHeight();
+        const imgWidth = pdfWidth - 20;
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 10;
+        
+        pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+        heightLeft -= (pdfHeight - 20);
+
+        let pageNumber = 1;
+        while (heightLeft > 0) {
+            position -= (pdfHeight - 20);
+            pdf.addPage();
+            pageNumber++;
+            pdf.addImage(imgData, 'PNG', 10, position, imgWidth, imgHeight);
+            pdf.text(`Página ${pageNumber}`, pdfWidth / 2, pdfHeight - 10, { align: 'center' });
+        }
+        
+        pdf.save(`relatorio-downloads-${new Date().toISOString().split('T')[0]}.pdf`);
+        
+        printReportBtn.textContent = 'Imprimir em PDF';
+        printReportBtn.disabled = false;
+    });
+});
+
+// --- LÓGICA DE LOGOUT ---
+logoutBtn.addEventListener('click', () => {
+    window.location.href = 'index.html';
+});
