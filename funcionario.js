@@ -1,7 +1,5 @@
-// funcionario.js
 import { supabase } from './supabase.js';
 
-// --- SELETORES DO DOM ---
 const logoutBtn = document.getElementById('logout-btn-func');
 const welcomeMessage = document.getElementById('welcome-message');
 const holeritesList = document.getElementById('holerites-list');
@@ -10,30 +8,21 @@ const passwordModal = document.getElementById('password-modal');
 const closeModalBtn = document.getElementById('close-modal-btn');
 const changePasswordForm = document.getElementById('change-password-form');
 
-// --- FUNÇÕES AUXILIARES ---
 const formatarMesReferencia = (dataISO) => {
-    // Adicionado tratamento de erro para datas inválidas
     if (!dataISO) return "Data Inválida";
     const [ano, mes] = dataISO.split('-');
     const meses = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
-    // Adicionado tratamento de erro para mês inválido
     if (mes < 1 || mes > 12) return "Data Inválida";
     return `${meses[parseInt(mes) - 1]} de ${ano}`;
 };
 
-// --- LÓGICA DE RASTREAMENTO DE DOWNLOAD ---
 holeritesList.addEventListener('click', async (event) => {
-    // A lógica só roda se o elemento clicado tiver a classe 'download-link'
     if (event.target.classList.contains('download-link')) {
         const jaBaixou = event.target.dataset.baixado === 'true';
 
-        // O registro no banco só acontece se o atributo 'data-baixado' for falso
         if (!jaBaixou) {
             const holeriteId = event.target.dataset.holeriteId;
-            // Marca imediatamente o atributo no HTML para evitar cliques duplicados
             event.target.dataset.baixado = 'true'; 
-
-            // Atualiza a data_download no banco de dados
             supabase
                 .from('holerites')
                 .update({ data_download: new Date() })
@@ -41,10 +30,8 @@ holeritesList.addEventListener('click', async (event) => {
                 .then(({ error }) => {
                     if (error) {
                         console.error("Erro ao registrar download:", error);
-                        // Se houver um erro, permite que o usuário tente novamente
                         event.target.dataset.baixado = 'false';
                     } else {
-                        // Se for bem-sucedido, muda o texto e a cor do botão permanentemente (nesta sessão)
                         event.target.textContent = 'Baixar Novamente';
                         event.target.style.backgroundColor = 'var(--success-color, #28a745)';
                     }
@@ -53,7 +40,6 @@ holeritesList.addEventListener('click', async (event) => {
     }
 });
 
-// --- LÓGICA PRINCIPAL AO CARREGAR A PÁGINA ---
 document.addEventListener('DOMContentLoaded', async () => {
     const funcionarioId = sessionStorage.getItem('funcionarioId');
     if (!funcionarioId) {
@@ -85,10 +71,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         holeritesList.innerHTML = '';
 
         for (const holerite of listaHolerites) {
-            const { data, error: urlError } = await supabase.storage.from('holerites').createSignedUrl(holerite.pdf_path, 300); // Link válido por 5 minutos
+            const { data, error: urlError } = await supabase.storage.from('holerites').createSignedUrl(holerite.pdf_path, 300);
             if (urlError) {
                 console.error("Erro ao gerar URL para o PDF:", urlError);
-                continue; // Pula para o próximo item
+                continue; 
             }
             
             const holeriteItem = document.createElement('div');
@@ -118,7 +104,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-// --- LÓGICA DO MODAL DE SENHA ---
 const closeModal = () => {
     passwordModal.style.display = 'none';
     changePasswordForm.reset();
@@ -173,7 +158,6 @@ changePasswordForm.addEventListener('submit', async (event) => {
     }
 });
 
-// --- LÓGICA DE LOGOUT ---
 logoutBtn.addEventListener('click', () => {
     sessionStorage.removeItem('funcionarioId');
     window.location.href = 'index.html';

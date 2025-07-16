@@ -1,9 +1,4 @@
-// autenticacao.js
-
-// Importa o cliente supabase do nosso arquivo de configuração
 import { supabase } from './supabase.js';
-
-// --- CONTROLE DA INTERFACE DE LOGIN ---
 
 const gearButton = document.getElementById('gear-btn');
 const mainLoginForm = document.getElementById('main-login-form');
@@ -25,46 +20,35 @@ backToMainLoginLink.addEventListener('click', (event) => {
 });
 
 
-// --- LÓGICA DE AUTENTICAÇÃO ---
-
-// Escuta o evento de 'submit' do formulário de funcionário
 mainLoginForm.querySelector('form').addEventListener('submit', async (event) => {
-    event.preventDefault(); // Impede o recarregamento da página
+    event.preventDefault(); 
 
-    // Pega os valores dos TRÊS campos
     const nome = document.getElementById('nome').value;
     const cpf = document.getElementById('cpf').value;
     const senha = document.getElementById('senha').value;
-    
-    // Procura no banco um funcionário com NOME, CPF e SENHA informados
     const { data, error } = await supabase
         .from('funcionario')
-        .select('id') // Só precisamos do ID para o sessionStorage
-        .eq('nome', nome)      // <--- CORREÇÃO: Adicionada a verificação do nome
+        .select('id')
+        .eq('nome', nome) 
         .eq('cpf', cpf)
         .eq('senha', senha)
-        .single(); // .single() espera um resultado único ou nenhum
+        .single(); 
 
-    if (error && error.code !== 'PGRST116') { // Ignora o erro "nenhuma linha encontrada"
+    if (error && error.code !== 'PGRST116') { 
         console.error('Erro na consulta:', error);
         alert('Ocorreu um erro ao tentar fazer login. Tente novamente.');
         return;
     }
 
     if (data) {
-        // Se encontrou, guarda o ID na sessão antes de redirecionar
         sessionStorage.setItem('funcionarioId', data.id);
-        
         alert('Login de funcionário bem-sucedido!');
         window.location.href = 'funcionario.html';
     } else {
-        // Se não encontrou, avisa o usuário
-        alert('Nome, CPF ou senha inválidos. Verifique os dados e tente novamente.'); // <--- CORREÇÃO: Mensagem de erro mais clara
+        alert('Nome, CPF ou senha inválidos. Verifique os dados e tente novamente.');
     }
 });
 
-
-// Escuta o evento de 'submit' do formulário de administrador
 adminLoginForm.querySelector('form').addEventListener('submit', async (event) => {
     event.preventDefault();
 

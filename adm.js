@@ -1,15 +1,9 @@
-// adm.js
 import { supabase } from './supabase.js';
 
-// --- SELETORES GERAIS DO DOM ---
 const logoutBtn = document.getElementById('logout-btn');
 const sideMenuButtons = document.querySelectorAll('.side-menu button');
 const contentSections = document.querySelectorAll('.content-section');
-
-// --- Seletores da Seção CADASTRO ---
 const cadastroForm = document.getElementById('cadastro-form');
-
-// --- Seletores da Seção CONSULTA e EDIÇÃO ---
 const searchNomeInput = document.getElementById('search-nome');
 const searchLojaInput = document.getElementById('search-loja');
 const resultList = document.getElementById('result-list');
@@ -17,13 +11,9 @@ const noResultsMessage = document.getElementById('no-results');
 const editModal = document.getElementById('edit-modal');
 const closeModalBtn = document.getElementById('close-modal-btn');
 const editForm = document.getElementById('edit-form');
-
-// --- Seletores da Seção ENVIAR HOLERITE ---
 const holeriteUploadForm = document.getElementById('holerite-upload-form');
 const holeriteLojaSelect = document.getElementById('holerite-loja-select');
 const holeriteFuncSelect = document.getElementById('holerite-func-select');
-
-// --- Seletores da Seção RELATÓRIOS ---
 const reportLojaSelect = document.getElementById('report-loja-select');
 const reportMesSelect = document.getElementById('report-mes-select');
 const generateReportBtn = document.getElementById('generate-report-btn');
@@ -31,10 +21,8 @@ const reportActionsDiv = document.getElementById('report-actions');
 const printReportBtn = document.getElementById('print-report-btn');
 const reportOutput = document.getElementById('report-output');
 
-// --- VARIÁVEL GLOBAL PARA CACHE ---
 let allFuncionarios = [];
 
-// --- FUNÇÕES DE NAVEGAÇÃO E PREENCHIMENTO ---
 const showSection = (targetId) => {
     contentSections.forEach(section => {
         section.classList.toggle('active', section.id === targetId);
@@ -42,19 +30,14 @@ const showSection = (targetId) => {
 };
 
 const populateLojaFilters = async () => {
-    // Busca os funcionários apenas uma vez para otimizar
     if (allFuncionarios.length > 0) return;
-
     const { data, error } = await supabase.from('funcionario').select('id, nome, loja').order('nome');
     if (error) {
         console.error("Erro ao buscar funcionários para os filtros:", error);
         return;
     }
-
     allFuncionarios = data;
     const lojas = [...new Set(allFuncionarios.map(f => f.loja))].sort();
-
-    // Limpa os seletores antes de popular
     holeriteLojaSelect.innerHTML = '<option value="">Todas as Lojas</option>';
     reportLojaSelect.innerHTML = '<option value="" disabled selected>Selecione uma loja...</option>';
 
@@ -64,7 +47,6 @@ const populateLojaFilters = async () => {
     });
 };
 
-// --- EVENT LISTENERS GERAIS ---
 sideMenuButtons.forEach(button => {
     button.addEventListener('click', () => {
         const targetSectionId = button.getAttribute('data-target');
@@ -83,7 +65,6 @@ holeriteLojaSelect.addEventListener('change', () => {
     });
 });
 
-// --- LÓGICA DE CADASTRO ---
 cadastroForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     const { error } = await supabase.from('funcionario').insert([{
@@ -98,11 +79,10 @@ cadastroForm.addEventListener('submit', async (event) => {
     } else {
         alert('Funcionário cadastrado com sucesso!');
         cadastroForm.reset();
-        allFuncionarios = []; // Limpa o cache para forçar a atualização
+        allFuncionarios = []; 
     }
 });
 
-// --- LÓGICA DE CONSULTA E EDIÇÃO ---
 const fetchAndDisplayFuncionarios = async () => {
     let query = supabase.from('funcionario').select('*').order('nome', { ascending: true });
     if (searchNomeInput.value) query = query.ilike('nome', `%${searchNomeInput.value}%`);
@@ -161,26 +141,18 @@ editForm.addEventListener('submit', async (event) => {
     if (error) { alert(`Erro ao atualizar: ${error.message}`); } else { alert('Funcionário atualizado!'); editModal.style.display = 'none'; fetchAndDisplayFuncionarios(); allFuncionarios = []; }
 });
 
-// --- LÓGICA DE ENVIO DE HOLERITE ---
 holeriteUploadForm.addEventListener('submit', async (event) => {
     event.preventDefault();
     const funcionarioId = holeriteFuncSelect.value;
-    
-    // --- CORREÇÃO APLICADA AQUI ---
-    // A variável 'mesReferenciaInput' agora pega o elemento correto.
     const mesReferenciaInput = document.getElementById('holerite-mes'); 
-    
     const pdfFile = document.getElementById('holerite-pdf-file').files[0];
     const submitButton = holeriteUploadForm.querySelector('button[type="submit"]');
-
-    // --- E AQUI ---
-    // A verificação agora usa o 'mesReferenciaInput.value' para checar se a data foi preenchida.
     if (!funcionarioId || !mesReferenciaInput.value || !pdfFile) {
         alert("Preencha todos os campos.");
         return;
     }
 
-    const mesReferencia = mesReferenciaInput.value + '-01'; // Adiciona o dia para ser uma data válida
+    const mesReferencia = mesReferenciaInput.value + '-01'; 
 
     submitButton.disabled = true;
     submitButton.textContent = 'Enviando...';
@@ -208,7 +180,6 @@ holeriteUploadForm.addEventListener('submit', async (event) => {
     }
 });
 
-// --- LÓGICA DO RELATÓRIO ---
 const formatarMesReferencia = (dataISO) => {
     const data = new Date(dataISO);
     return `${data.toLocaleString('pt-BR', { month: 'long', timeZone: 'UTC' })} de ${data.getUTCFullYear()}`;
@@ -298,7 +269,6 @@ printReportBtn.addEventListener('click', () => {
     });
 });
 
-// --- LÓGICA DE LOGOUT ---
 logoutBtn.addEventListener('click', () => {
     window.location.href = 'index.html';
 });
