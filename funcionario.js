@@ -72,7 +72,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         holeritesList.innerHTML = '';
 
         for (const holerite of listaHolerites) {
-            // Se o caminho do PDF for nulo, significa que já foi limpo pelo sistema
             if (!holerite.pdf_path) {
                 const holeriteItem = document.createElement('div');
                 holeriteItem.className = 'func-item';
@@ -88,10 +87,9 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </div>
                 `;
                 holeritesList.appendChild(holeriteItem);
-                continue; // Pula para o próximo item
+                continue; 
             }
             
-            // ==== INÍCIO DA NOVA LÓGICA DE AVISO DE EXPIRAÇÃO ====
             let expiryMessage = '';
             const uploadDate = new Date(holerite.uploaded_at);
             const expirationDate = new Date(new Date(uploadDate).setMonth(uploadDate.getMonth() + 6));
@@ -109,9 +107,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                     </p>
                 `;
             } 
-            // ==== FIM DA NOVA LÓGICA ====
 
-            const { data, error: urlError } = await supabase.storage.from('holerites').createSignedUrl(holerite.pdf_path, 300); // 5 minutos de validade para o link
+            const { data, error: urlError } = await supabase.storage.from('holerites').createSignedUrl(holerite.pdf_path, 300);
             if (urlError) {
                 console.error("Erro ao gerar URL para o PDF:", urlError);
                 continue;
@@ -124,7 +121,6 @@ document.addEventListener('DOMContentLoaded', async () => {
             const buttonText = isDownloaded ? 'Baixar Novamente' : 'Baixar PDF';
             const buttonColor = isDownloaded ? 'var(--success-color, #28a745)' : 'var(--primary-color, #007bff)';
             
-            // ==== MODIFICAÇÃO: ADICIONADO expiryMessage NO HTML ====
             holeriteItem.innerHTML = `
                 <div class="func-info">
                     <p><span>Mês de Referência:</span> ${formatarMesReferencia(holerite.mes_referencia)}</p>

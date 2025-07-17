@@ -5,24 +5,20 @@ console.log("Função de limpeza iniciada");
 
 serve(async (_req) => {
   try {
-    // É essencial criar o cliente com a SERVICE_ROLE_KEY para ter permissões de administrador
-    // e ignorar as políticas de segurança de linha (RLS).
     const supabaseAdmin = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    // 1. Calcular a data limite (6 meses atrás a partir de hoje)
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
     console.log(`Data limite para limpeza: ${sixMonthsAgo.toISOString()}`);
 
-    // 2. Buscar por holerites antigos que ainda possuem um caminho de PDF
     const { data: oldHolerites, error: selectError } = await supabaseAdmin
       .from('holerites')
       .select('id, pdf_path')
-      .lt('uploaded_at', sixMonthsAgo.toISOString()) // 'lt' = Less Than (menor que)
-      .not('pdf_path', 'is', null); // Garante que pegamos apenas registros que ainda têm um PDF
+      .lt('uploaded_at', sixMonthsAgo.toISOString()) 
+      .not('pdf_path', 'is', null); 
 
     if (selectError) {
       console.error('Erro ao buscar holerites antigos:', selectError);
@@ -40,14 +36,12 @@ serve(async (_req) => {
 
     console.log(`Encontrados ${oldHolerites.length} arquivos para limpar.`);
 
-    // 3. Preparar listas para deleção e atualização
     const pathsToDelete = oldHolerites.map(h => h.pdf_path);
     const idsToUpdate = oldHolerites.map(h => h.id);
     console.log("Caminhos para deletar:", pathsToDelete);
 
-    // 4. Deletar os arquivos do Storage em lote
     const { error: storageError } = await supabaseAdmin.storage
-      .from('holerites') // Nome do seu bucket
+      .from('holerites') 
       .remove(pathsToDelete);
 
     if (storageError) {
@@ -55,11 +49,9 @@ serve(async (_req) => {
       throw storageError;
     }
     console.log("Arquivos deletados do Storage com sucesso.");
-
-    // 5. Atualizar os registros no banco, removendo a referência ao PDF
     const { error: updateError } = await supabaseAdmin
       .from('holerites')
-      .update({ pdf_path: null }) // Define o caminho como nulo para indicar que o arquivo foi removido
+      .update({ pdf_path: null })
       .in('id', idsToUpdate);
 
     if (updateError) {

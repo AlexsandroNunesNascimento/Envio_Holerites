@@ -273,10 +273,6 @@ logoutBtn.addEventListener('click', () => {
     window.location.href = 'index.html';
 });
 
-// ... (mantenha todo o seu código adm.js existente aqui)
-
-// --- COLE ESTE NOVO BLOCO DE CÓDIGO NO FINAL DO SEU adm.js ---
-
 const runCleanupButton = document.getElementById('run-cleanup-btn');
 const cleanupStatusDiv = document.getElementById('cleanup-status');
 
