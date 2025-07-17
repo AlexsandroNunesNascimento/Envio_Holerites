@@ -26,6 +26,10 @@
                         Holerite</span></button>
                 <button data-target="report-section"><i class="fa-solid fa-chart-line"></i>
                     <span>Relatórios</span></button>
+                <button data-target="maintenance-section" style="color: #ffc107;">
+                    <i class="fa-solid fa-broom"></i>
+                    <span>Limpeza</span>
+                </button>
             </nav>
             <main class="main-content">
                 <div id="welcome-section" class="content-section active">
@@ -118,6 +122,33 @@
                     <div id="report-output">
                         <p style="color: #888; text-align: center; margin-top: 2rem;">Selecione os filtros e gere um
                             relatório.</p>
+                    </div>
+                </div>
+
+                <!-- Cole este bloco dentro do seu <main class="main-content">, junto com as outras seções -->
+                <div id="maintenance-section" class="content-section">
+                    <h2>Limpeza de Holerites Antigos</h2>
+                    <p style="font-size: 1.1em; color: #666; margin-bottom: 1rem;">
+                        O sistema permite que funcionários acessem os holerites dos últimos 6 meses.
+                        Clique no botão abaixo para executar uma limpeza e remover permanentemente todos os holerites
+                        que sejam <strong>mais antigos que 6 meses a partir do mês atual</strong>.
+                    </p>
+                    <p><strong>Exemplo:</strong> Se executado em Julho/2025, todos os holerites de Janeiro/2025 e dos
+                        meses anteriores serão removidos.</p>
+
+                    <div
+                        style="background-color: #f8d7da; color: #721c24; padding: 1rem; border-radius: 8px; border: 1px solid #f5c6cb; margin-top:1.5rem;">
+                        <p style="margin:0;"><strong><i class="fa-solid fa-triangle-exclamation"></i> ATENÇÃO:</strong>
+                            Esta é uma ação irreversível. Os arquivos PDF serão deletados permanentemente.</p>
+                    </div>
+
+                    <button id="run-cleanup-btn" class="submit-btn"
+                        style="background-color: #dc3545; width: 100%; margin-top: 2rem;">
+                        <i class="fa-solid fa-trash-can"></i> Executar Limpeza de Holerites Antigos
+                    </button>
+
+                    <div id="cleanup-status" style="margin-top: 1.5rem; font-weight: 500; text-align:center;">
+                        <!-- O status da operação aparecerá aqui -->
                     </div>
                 </div>
             </main>

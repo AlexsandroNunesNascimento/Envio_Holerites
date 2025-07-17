@@ -272,3 +272,47 @@ printReportBtn.addEventListener('click', () => {
 logoutBtn.addEventListener('click', () => {
     window.location.href = 'index.html';
 });
+
+// ... (mantenha todo o seu código adm.js existente aqui)
+
+// --- COLE ESTE NOVO BLOCO DE CÓDIGO NO FINAL DO SEU adm.js ---
+
+const runCleanupButton = document.getElementById('run-cleanup-btn');
+const cleanupStatusDiv = document.getElementById('cleanup-status');
+
+runCleanupButton.addEventListener('click', async () => {
+    
+    const isConfirmed = confirm("Você tem certeza que deseja deletar PERMANENTEMENTE todos os holerites com mais de 6 meses?\n\nEsta ação não pode ser desfeita.");
+    
+    if (!isConfirmed) {
+        cleanupStatusDiv.textContent = "Operação cancelada.";
+        cleanupStatusDiv.style.color = '#333';
+        return;
+    }
+
+    runCleanupButton.disabled = true;
+    runCleanupButton.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Executando limpeza...';
+    cleanupStatusDiv.innerHTML = 'Conectando ao servidor... Por favor, aguarde, isso pode levar alguns instantes.';
+    cleanupStatusDiv.style.color = 'blue';
+
+    try {
+        const { data, error } = await supabase.functions.invoke('cleanup-storage');
+
+        if (error) throw error;
+
+        const successMessage = `✅ Limpeza Concluída! Resposta do servidor: "${data.message}"`;
+        cleanupStatusDiv.innerHTML = successMessage;
+        cleanupStatusDiv.style.color = 'green';
+        alert(successMessage);
+
+    } catch (err) {
+        console.error("Erro ao invocar a função de limpeza:", err);
+        const errorMessage = `❌ Erro na operação: ${err.message}`;
+        cleanupStatusDiv.innerHTML = errorMessage;
+        cleanupStatusDiv.style.color = 'red';
+        alert(errorMessage + " Veja o console do navegador para mais detalhes (F12).");
+    } finally {
+        runCleanupButton.disabled = false;
+        runCleanupButton.innerHTML = '<i class="fa-solid fa-trash-can"></i> Executar Limpeza de Holerites Antigos';
+    }
+});
